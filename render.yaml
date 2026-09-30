@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ludo-san-pio-x-5to-a-ingenieria
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit

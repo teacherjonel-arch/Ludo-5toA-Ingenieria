@@ -1,0 +1,231 @@
+{
+  "questionMapVersion": 2,
+  "customCellQuestions": {
+    "0-1": [
+      {
+        "q": "Resolver: 5 ( x + 2 ) = 25",
+        "a": [
+          "5",
+          "3",
+          "1",
+          "6"
+        ],
+        "ok": 1,
+        "image": ""
+      },
+      {
+        "q": "Si  a = 3 , ¿cuánto vale  2 a + 5 ?",
+        "a": [
+          "11",
+          "10",
+          "14",
+          "13"
+        ],
+        "ok": 0,
+        "image": ""
+      },
+      {
+        "q": "Resuelve: 3 m + 2 m + 1 =",
+        "a": [
+          "m+1",
+          "6m+1",
+          "6m",
+          "5m+1"
+        ],
+        "ok": 3,
+        "image": ""
+      },
+      {
+        "q": "Cuanto vale X? x + 8 = 13",
+        "a": [
+          "5",
+          "6",
+          "6",
+          "9"
+        ],
+        "ok": 0,
+        "image": ""
+      }
+    ],
+    "1-8": [
+      {
+        "q": "Compras 3 productos de S/25 cada uno y pagas con S/100. ¿Cuánto recibes de vuelto?",
+        "a": [
+          "20",
+          "25",
+          "10",
+          "24"
+        ],
+        "ok": 1,
+        "image": ""
+      },
+      {
+        "q": "25 + 18 × 2 − 10 =",
+        "a": [
+          "49",
+          "30",
+          "51",
+          "55"
+        ],
+        "ok": 2,
+        "image": ""
+      },
+      {
+        "q": "Tienes S/200. Gastas S/45 en comida, S/30 en transporte y S/25 en otras cosas. ¿Cuánto te queda?",
+        "a": [
+          "90",
+          "80",
+          "75",
+          "100"
+        ],
+        "ok": 3,
+        "image": ""
+      },
+      {
+        "q": "Tienes S/250. Compras 2 polos de S/45 cada uno y un pantalón de S/80. ¿Cuánto dinero te queda?",
+        "a": [
+          "90",
+          "100",
+          "80",
+          "75"
+        ],
+        "ok": 2,
+        "image": ""
+      }
+    ],
+    "2-15": [
+      {
+        "q": "Un cuadrado tiene lados de 7 cm. ¿Cuál es su perímetro?",
+        "a": [
+          "28",
+          "25",
+          "20",
+          "23"
+        ],
+        "ok": 0,
+        "image": ""
+      },
+      {
+        "q": "Un círculo tiene un diámetro de 10 cm. ¿Cuál es su radio?",
+        "a": [
+          "4,5",
+          "5",
+          "6",
+          "10"
+        ],
+        "ok": 1,
+        "image": ""
+      },
+      {
+        "q": "¿Cuántos grados tiene un ángulo recto?",
+        "a": [
+          "90°",
+          "180°",
+          "270°",
+          "0°"
+        ],
+        "ok": 0,
+        "image": ""
+      },
+      {
+        "q": "Un cuadrado tiene un perímetro de 32 cm. ¿Cuánto mide cada lado?",
+        "a": [
+          "16",
+          "2",
+          "4",
+          "8"
+        ],
+        "ok": 3,
+        "image": ""
+      }
+    ],
+    "3-22": [
+      {
+        "q": "Un triángulo rectángulo tiene catetos de 3 cm y 4 cm. ¿Cuánto mide la hipotenusa?",
+        "a": [
+          "5 cm",
+          "1 cm",
+          "7 cm",
+          "12 cm"
+        ],
+        "ok": 0,
+        "image": ""
+      },
+      {
+        "q": "Un triángulo tiene hipotenusa de 10 cm y un cateto de 6 cm. ¿Cuánto mide el otro cateto?",
+        "a": [
+          "4",
+          "8",
+          "6",
+          "10"
+        ],
+        "ok": 1,
+        "image": ""
+      },
+      {
+        "q": "Un triángulo rectángulo tiene hipotenusa de 10 cm y cateto opuesto de 5 cm. ¿Cuál es el seno del ángulo?",
+        "a": [
+          "0.5 cm",
+          "5 cm",
+          "1 cm",
+          "10 cm"
+        ],
+        "ok": 0,
+        "image": ""
+      },
+      {
+        "q": "¿Cuántos grados tiene una vuelta completa?",
+        "a": [
+          "180°",
+          "270°",
+          "360°",
+          "90°"
+        ],
+        "ok": 2,
+        "image": ""
+      }
+    ]
+  },
+  "skillQuestions": [
+    {
+      "q": "Completa la secuencia: 2, 4, 6, __",
+      "a": [
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "ok": 1
+    },
+    {
+      "q": "Si tienes 3 grupos de 5, ¿cuántos hay en total?",
+      "a": [
+        "8",
+        "10",
+        "15",
+        "20"
+      ],
+      "ok": 2
+    },
+    {
+      "q": "¿Cuál es el mayor número?",
+      "a": [
+        "0.8",
+        "0.08",
+        "0.18",
+        "0.7"
+      ],
+      "ok": 0
+    },
+    {
+      "q": "Si un número aumenta de 9 a 12, ¿cuánto aumentó?",
+      "a": [
+        "2",
+        "3",
+        "4",
+        "21"
+      ],
+      "ok": 1
+    }
+  ]
+}
