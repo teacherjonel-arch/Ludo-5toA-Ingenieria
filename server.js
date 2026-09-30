@@ -11,8 +11,6 @@ const PORT=process.env.PORT||3000;
 const ADMIN_PASSWORD='1234';
 const DATA_FILE=path.join(__dirname,'data','questions.json');
 
-app.get('/health',(req,res)=>res.json({ok:true,service:'ludo-san-pio-x-5to-a-ingenieria'}));
-
 app.use(express.static(path.join(__dirname,'public')));
 
 const route=[[6,1],[6,3],[6,5],[4,6],[2,6],[0,6],[0,8],[1,8],[3,8],[5,8],[6,10],[6,12],[6,14],[8,14],[8,13],[8,11],[8,9],[10,8],[12,8],[14,8],[14,6],[13,6],[11,6],[9,6],[8,4],[8,2],[8,0],[6,0]];
@@ -24,21 +22,18 @@ const cfg=[
   {name:'Trigonometría',colorName:'Treviso',start:21,homes:[[10,2],[10,4],[12,2],[12,4]],lane:[[13,7],[12,7],[11,7],[10,7],[9,7],[8,7]]}
 ];
 
-function loadQuestions(){try{return JSON.parse(fs.readFileSync(DATA_FILE,'utf8'));}catch{return {questionMapVersion:2,customCellQuestions:{},skillQuestions:[]};}}
+function loadQuestions(){try{return JSON.parse(fs.readFileSync(DATA_FILE,'utf8'));}catch{return {questionMapVersion:3,courseQuestions:{},skillQuestions:[]};}}
 let questions=loadQuestions();
-function saveQuestions(q){questions=q;fs.mkdirSync(path.dirname(DATA_FILE),{recursive:true});fs.writeFileSync(DATA_FILE,JSON.stringify(q,null,2),'utf8');}
+function saveQuestions(q){questions=q;fs.writeFileSync(DATA_FILE,JSON.stringify(q,null,2),'utf8');}
 function cleanQuestions(q){
   if(!q||typeof q!=='object')return null;
-  const out={questionMapVersion:2,customCellQuestions:{},skillQuestions:Array.isArray(q.skillQuestions)?q.skillQuestions.slice(0,4):[]};
-  const src=q.customCellQuestions||{};
-  for(const [k,v] of Object.entries(src)){
-    if(!Array.isArray(v)||!v.length)continue;
-    const cleaned=v.slice(0,4).map(item=>{
-      if(!item||typeof item.q!=='string'||!Array.isArray(item.a)||item.a.length!==4)return null;
-      return {q:item.q.slice(0,1000),a:item.a.slice(0,4).map(x=>String(x).slice(0,300)),ok:Math.max(0,Math.min(3,Number(item.ok)||0)),image:typeof item.image==='string'?item.image:''};
-    }).filter(Boolean);
-    if(cleaned.length)out.customCellQuestions[k]=cleaned;
+  const out={questionMapVersion:3,courseQuestions:{},skillQuestions:[]};
+  const src=q.courseQuestions||{};
+  for(let course=0;course<4;course++){
+    const arr=Array.isArray(src[String(course)])?src[String(course)]:[];
+    out.courseQuestions[String(course)]=arr.slice(0,6).filter(item=>item&&typeof item.q==='string'&&Array.isArray(item.a)&&item.a.length===4).map(item=>({q:item.q.slice(0,1000),a:item.a.slice(0,4).map(x=>String(x).slice(0,300)),ok:Math.max(0,Math.min(3,Number(item.ok)||0)),image:typeof item.image==='string'?item.image:''}));
   }
+  out.skillQuestions=(Array.isArray(q.skillQuestions)?q.skillQuestions:[]).slice(0,4).filter(item=>item&&typeof item.q==='string'&&Array.isArray(item.a)&&item.a.length===4).map(item=>({q:item.q.slice(0,1000),a:item.a.slice(0,4).map(x=>String(x).slice(0,300)),ok:Math.max(0,Math.min(3,Number(item.ok)||0)),image:typeof item.image==='string'?item.image:''}));
   return out;
 }
 
@@ -67,11 +62,11 @@ function askQuestion(room,t,oldPos,six){
   const isSkill=t.pos===34;
   const cell=isSkill?null:(cfg[t.p].start+t.pos)%28;
   const course=isSkill?null:Math.floor(cell/7);
-  const bank=isSkill?room.questions.skillQuestions:room.questions.customCellQuestions[`${course}-${cell}`];
+  const bank=isSkill?room.questions.skillQuestions:(room.questions.courseQuestions?.[String(course)]||[]);
   if(!bank||!bank.length){finishMove(room,t,six,true);broadcastRoom(room);return;}
   const item=bank[Math.floor(Math.random()*bank.length)];
   const q={id:Math.random().toString(36).slice(2),tag:isSkill?'Habilidad Matemática':cfg[course].name,q:item.q,a:item.a,image:item.image||'',team:t.p,tokenIndex:room.tokens.indexOf(t)};
-  room.pending={...q,oldPos,six,expected:item.ok};
+  room.pending={...q,oldPos,six};
   // Todos los jugadores ven el mismo desafío; solo el dueño del turno puede resolverlo.
   io.to(room.code).emit('question',q);
 }
@@ -85,8 +80,15 @@ io.on('connection',socket=>{
   socket.on('startGame',()=>{const room=rooms.get(socket.roomCode);if(!room||room.host!==socket.id)return;if(room.players.size!==room.playerCount)return socket.emit('errorMessage','Faltan jugadores.');startRoom(room);});
   socket.on('rollDice',()=>{const room=rooms.get(socket.roomCode);if(!room||room.current!==socket.team||!room.started||room.awaitingMove||room.winner!==null)return;room.value=1+Math.floor(Math.random()*6);room.awaitingMove=true;const can=room.tokens.some(t=>t.p===room.current&&(t.pos<0?room.value===6:t.pos+room.value<=34));if(!can){room.awaitingMove=false;const rolled=room.value;room.value=null;room.message=`Salió ${rolled}. No hay movimiento posible.`;room.current=(room.current+1)%room.playerCount;}else room.message=`Salió ${room.value}. Elige una ficha.`;broadcastRoom(room);});
   socket.on('moveToken',({tokenIndex}={})=>{const room=rooms.get(socket.roomCode);if(!room||socket.team!==room.current||!room.awaitingMove)return;const t=room.tokens[Number(tokenIndex)];if(!legal(room,t))return socket.emit('errorMessage','Movimiento no válido.');const oldPos=t.pos,six=room.value===6;t.pos=t.pos<0?0:t.pos+room.value;room.message='Responde el desafío matemático.';const isWhite=t.pos>=0&&t.pos<28&&!starts.includes((cfg[t.p].start+t.pos)%28);if(isWhite||t.pos===34)askQuestion(room,t,oldPos,six);else {finishMove(room,t,six,true);broadcastRoom(room);}});
-  socket.on('answerQuestion',({answer,questionId}={})=>{const room=rooms.get(socket.roomCode);if(!room||!room.pending||room.pending.id!==questionId||room.pending.team!==socket.team||room.current!==socket.team)return;const p=room.pending;
-    const ok=Number(answer)===Number(p.expected);
+  socket.on('answerQuestion',({answer,questionId}={})=>{const room=rooms.get(socket.roomCode);if(!room||!room.pending||room.pending.id!==questionId||room.pending.team!==socket.team||room.current!==socket.team)return;const p=room.pending;const correct=Number(answer)===Number(p.a.indexOf(p.a[p.a.findIndex(x=>x===p.a[Number(answer)])])); // replaced below
+    let expected=null;
+    const isSkill=room.pending.tag==='Habilidad Matemática';
+    if(isSkill){
+      const item=room.questions.skillQuestions.find(x=>x.q===room.pending.q);expected=item?item.ok:null;
+    }else{
+      for(const arr of Object.values(room.questions.courseQuestions||{})){const item=arr.find(x=>x&&x.q===room.pending.q);if(item){expected=item.ok;break;}}
+    }
+    const ok=Number(answer)===Number(expected);
     const t=room.tokens[p.tokenIndex];room.pending=null;finishMove(room,t,p.six,ok);io.to(room.code).emit('questionResult',{correct:ok,message:ok?'¡Respuesta correcta!':'Respuesta incorrecta. La ficha regresa.',state:publicState(room)});});
   socket.on('disconnect',()=>{const code=socket.roomCode;if(!code)return;const room=rooms.get(code);if(!room)return;room.players.delete(socket.id);delete room.playersByTeam[socket.team];if(room.host===socket.id){const next=room.players.values().next().value;if(next){room.host=next.id;}}if(room.players.size===0){rooms.delete(code);return;}io.to(code).emit('roomInfo',roomInfo(room));});
 });

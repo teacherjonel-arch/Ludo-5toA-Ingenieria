@@ -1,7 +1,13 @@
 {
-  "name": "ludo-san-pio-x-online-admin",
+  "name": "ludo-5toa-ingenieria",
   "version": "1.0.0",
   "private": true,
-  "scripts": {"start": "node server.js"},
-  "dependencies": {"express": "^4.21.2", "socket.io": "^4.8.1"}
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
 }
